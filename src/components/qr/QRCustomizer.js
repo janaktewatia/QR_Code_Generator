@@ -91,43 +91,132 @@ const QRCustomizer = () => {
 
         {sections.colors && (
           <div className="mt-3">
-            {/* FOREGROUND COLOR */}
-
             <div className="mb-3">
-              <label className="form-label small">Foreground Color</label>
-
-              <div
-                className="color-preview border rounded p-2 d-flex align-items-center"
-                style={{
-                  backgroundColor: qrData.foregroundColor,
-                  height: "40px",
-                  cursor: "pointer",
-                }}
-                onClick={() => setShowColorPicker("foregroundColor")}
-              >
-                <span className="text-white ms-2">
-                  {qrData.foregroundColor}
-                </span>
+              <label className="form-label small d-block mb-2">
+                Color Mode
+              </label>
+              <div className="btn-group gap-2" role="group">
+                <button
+                  type="button"
+                  className={`btn btn-sm ${
+                    qrData.gradientType === "none"
+                      ? "btn-primary"
+                      : "btn-outline-secondary"
+                  }`}
+                  onClick={() =>
+                    updateQRData({
+                      gradientType: "none",
+                    })
+                  }
+                >
+                  Foreground
+                </button>
+                <button
+                  type="button"
+                  className={`btn btn-sm ${
+                    qrData.gradientType !== "none"
+                      ? "btn-primary"
+                      : "btn-outline-secondary"
+                  }`}
+                  onClick={() =>
+                    updateQRData({
+                      gradientType:
+                        qrData.gradientType === "none"
+                          ? "linear"
+                          : qrData.gradientType,
+                    })
+                  }
+                >
+                  Gradient
+                </button>
               </div>
             </div>
 
-            {/* BACKGROUND COLOR */}
+            {qrData.gradientType === "none" ? (
+              <div className="mb-3">
+                <label className="form-label small">Foreground Color</label>
 
-            <div className="mb-3">
-              <label className="form-label small">Background Color</label>
-
-              <div
-                className="color-preview border rounded p-2 d-flex align-items-center"
-                style={{
-                  backgroundColor: qrData.backgroundColor,
-                  height: "40px",
-                  cursor: "pointer",
-                }}
-                onClick={() => setShowColorPicker("backgroundColor")}
-              >
-                <span className="ms-2">{qrData.backgroundColor}</span>
+                <div
+                  className="color-preview border rounded p-2 d-flex align-items-center"
+                  style={{
+                    backgroundColor: qrData.foregroundColor,
+                    height: "40px",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => setShowColorPicker("foregroundColor")}
+                >
+                  <span className="text-white ms-2">
+                    {qrData.foregroundColor}
+                  </span>
+                </div>
               </div>
-            </div>
+            ) : (
+              <>
+                <div className="mb-3">
+                  <label className="form-label small d-block mb-2">
+                    Gradient Type
+                  </label>
+                  <div className="btn-group gap-2" role="group">
+                    {[
+                      { value: "linear", label: "Linear" },
+                      { value: "radial", label: "Radial" },
+                    ].map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        className={`btn btn-sm ${
+                          qrData.gradientType === option.value
+                            ? "btn-primary"
+                            : "btn-outline-secondary"
+                        }`}
+                        onClick={() =>
+                          updateQRData({
+                            gradientType: option.value,
+                          })
+                        }
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="row g-2 mb-3">
+                  <div className="col-sm-6">
+                    <label className="form-label small">Gradient Start</label>
+                    <div
+                      className="color-preview border rounded p-2 d-flex align-items-center"
+                      style={{
+                        backgroundColor: qrData.gradientStart,
+                        height: "40px",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => setShowColorPicker("gradientStart")}
+                    >
+                      <span className="text-white ms-2">
+                        {qrData.gradientStart}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="col-sm-6">
+                    <label className="form-label small">Gradient End</label>
+                    <div
+                      className="color-preview border rounded p-2 d-flex align-items-center"
+                      style={{
+                        backgroundColor: qrData.gradientEnd,
+                        height: "40px",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => setShowColorPicker("gradientEnd")}
+                    >
+                      <span className="text-white ms-2">
+                        {qrData.gradientEnd}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>

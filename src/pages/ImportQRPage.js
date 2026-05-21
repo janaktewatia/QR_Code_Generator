@@ -266,7 +266,7 @@ const ImportQRPage = () => {
   const [previewUrls, setPreviewUrls] = useState({});
   const [isProcessing, setIsProcessing] = useState(false);
   const [baseName, setBaseName] = useState("");
-  const [qrColor, setQrColor] = useState(qrData.foregroundColor || "#000000");
+  const [qrColor, setQrColor] = useState("#000000");
   const [warnings, setWarnings] = useState([]);
 
   const activeConfig = useMemo(
