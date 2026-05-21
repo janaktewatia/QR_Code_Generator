@@ -1,0 +1,341 @@
+import React from "react";
+import { useQR } from "../../context/QRContext";
+import { ChromePicker } from "react-color";
+import { FiChevronDown, FiChevronUp } from "react-icons/fi";
+
+const QRCustomizer = () => {
+  const { qrData, updateQRData } = useQR();
+
+  const [showColorPicker, setShowColorPicker] = React.useState(null);
+
+  const [sections, setSections] = React.useState({
+    colors: true,
+    style: true,
+    advanced: false,
+  });
+
+  const toggleSection = (section) => {
+    setSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  };
+
+  // ================= BODY SHAPES =================
+
+  const bodyShapePaths = {
+    square:
+      "M2,2 h6 v6 h-6 z M10,2 h6 v6 h-6 z M2,10 h6 v6 h-6 z M10,10 h6 v6 h-6 z",
+
+    dots: "M5,5 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0",
+
+    rounded:
+      "M2,2 h6 a1,1 0 0 1 1,1 v5 a1,1 0 0 1 -1,1 h-6 a1,1 0 0 1 -1,-1 v-5 a1,1 0 0 1 1,-1 z",
+
+    "extra-rounded":
+      "M2,2 h6 a2,2 0 0 1 2,2 v4 a2,2 0 0 1 -2,2 h-6 a2,2 0 0 1 -2,-2 v-4 a2,2 0 0 1 2,-2 z",
+
+    classy: "M2,2 h6 v6 h-6 z",
+
+    "classy-rounded":
+      "M2,2 h6 a1,1 0 0 1 1,1 v5 a1,1 0 0 1 -1,1 h-6 a1,1 0 0 1 -1,-1 v-5 a1,1 0 0 1 1,-1 z",
+  };
+
+  // ================= EYE FRAME SHAPES =================
+
+  const eyeFramePaths = {
+    square: "M2,2 h14 v14 h-14 z M4,4 h10 v10 h-10 z",
+
+    dot: "M9,2 m-7,0 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0",
+
+    "extra-rounded":
+      "M2,2 h14 a3,3 0 0 1 3,3 v10 a3,3 0 0 1 -3,3 h-14 a3,3 0 0 1 -3,-3 v-10 a3,3 0 0 1 3,-3 z",
+  };
+
+  // ================= EYE BALL SHAPES =================
+
+  const eyeBallPaths = {
+    square: "M5,5 h8 v8 h-8 z",
+
+    dot: "M9,9 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0",
+  };
+
+  // ================= SIZE HANDLER =================
+
+  const handleSizeChange = (e) => {
+    let val = parseInt(e.target.value, 10);
+
+    if (isNaN(val)) val = qrData.size;
+
+    val = Math.max(150, Math.min(2000, val));
+
+    updateQRData({ size: val });
+  };
+
+  return (
+    <div className="qr-customizer">
+      <h5 className="mb-3">Customize QR Code</h5>
+
+      {/* ================= COLORS SECTION ================= */}
+
+      <div className="customizer-section mb-3 border-bottom pb-3">
+        <div
+          className="d-flex justify-content-between align-items-center cursor-pointer"
+          onClick={() => toggleSection("colors")}
+          style={{ cursor: "pointer" }}
+        >
+          <h6 className="mb-0">Colors & Gradient</h6>
+
+          {sections.colors ? <FiChevronUp /> : <FiChevronDown />}
+        </div>
+
+        {sections.colors && (
+          <div className="mt-3">
+            {/* FOREGROUND COLOR */}
+
+            <div className="mb-3">
+              <label className="form-label small">Foreground Color</label>
+
+              <div
+                className="color-preview border rounded p-2 d-flex align-items-center"
+                style={{
+                  backgroundColor: qrData.foregroundColor,
+                  height: "40px",
+                  cursor: "pointer",
+                }}
+                onClick={() => setShowColorPicker("foregroundColor")}
+              >
+                <span className="text-white ms-2">
+                  {qrData.foregroundColor}
+                </span>
+              </div>
+            </div>
+
+            {/* BACKGROUND COLOR */}
+
+            <div className="mb-3">
+              <label className="form-label small">Background Color</label>
+
+              <div
+                className="color-preview border rounded p-2 d-flex align-items-center"
+                style={{
+                  backgroundColor: qrData.backgroundColor,
+                  height: "40px",
+                  cursor: "pointer",
+                }}
+                onClick={() => setShowColorPicker("backgroundColor")}
+              >
+                <span className="ms-2">{qrData.backgroundColor}</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ================= STYLE SECTION ================= */}
+
+      <div className="customizer-section mb-3 border-bottom pb-3">
+        <div
+          className="d-flex justify-content-between align-items-center cursor-pointer"
+          onClick={() => toggleSection("style")}
+          style={{ cursor: "pointer" }}
+        >
+          <h6 className="mb-0">QR Style</h6>
+
+          {sections.style ? <FiChevronUp /> : <FiChevronDown />}
+        </div>
+
+        {sections.style && (
+          <div className="mt-3">
+            {/* BODY SHAPE */}
+
+            <label className="form-label small fw-bold mb-2">Body Shape</label>
+
+            <div className="d-flex flex-wrap gap-2 mb-4">
+              {Object.entries(bodyShapePaths).map(([value, path]) => (
+                <button
+                  key={value}
+                  className={`btn p-2 ${
+                    qrData.style === value
+                      ? "btn-primary border-primary"
+                      : "btn-light border"
+                  }`}
+                  style={{
+                    width: "50px",
+                    height: "50px",
+                  }}
+                  onClick={() =>
+                    updateQRData({
+                      style: value,
+                    })
+                  }
+                  title={value}
+                >
+                  <svg
+                    viewBox="0 0 18 18"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  >
+                    <path d={path} fill="currentColor" />
+                  </svg>
+                </button>
+              ))}
+            </div>
+
+            {/* EYE FRAME */}
+
+            <label className="form-label small fw-bold mb-2">
+              Eye Frame Shape
+            </label>
+
+            <div className="d-flex flex-wrap gap-2 mb-4">
+              {Object.entries(eyeFramePaths).map(([value, path]) => (
+                <button
+                  key={value}
+                  className={`btn p-2 ${
+                    qrData.eyeFrameStyle === value
+                      ? "btn-primary border-primary"
+                      : "btn-light border"
+                  }`}
+                  style={{
+                    width: "50px",
+                    height: "50px",
+                  }}
+                  onClick={() =>
+                    updateQRData({
+                      eyeFrameStyle: value,
+                    })
+                  }
+                  title={value}
+                >
+                  <svg
+                    viewBox="0 0 18 18"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  >
+                    <path d={path} fill="currentColor" fillRule="evenodd" />
+                  </svg>
+                </button>
+              ))}
+            </div>
+
+            {/* EYE BALL */}
+
+            <label className="form-label small fw-bold mb-2">
+              Eye Ball Shape
+            </label>
+
+            <div className="d-flex flex-wrap gap-2 mb-4">
+              {Object.entries(eyeBallPaths).map(([value, path]) => (
+                <button
+                  key={value}
+                  className={`btn p-2 ${
+                    qrData.eyeBallStyle === value
+                      ? "btn-primary border-primary"
+                      : "btn-light border"
+                  }`}
+                  style={{
+                    width: "50px",
+                    height: "50px",
+                  }}
+                  onClick={() =>
+                    updateQRData({
+                      eyeBallStyle: value,
+                    })
+                  }
+                  title={value}
+                >
+                  <svg
+                    viewBox="0 0 18 18"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  >
+                    <path d={path} fill="currentColor" />
+                  </svg>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ================= SIZE SECTION ================= */}
+
+      <div className="customizer-section">
+        <div
+          className="d-flex justify-content-between align-items-center cursor-pointer"
+          onClick={() => toggleSection("advanced")}
+          style={{ cursor: "pointer" }}
+        >
+          <h6 className="mb-0">QR Size</h6>
+
+          {sections.advanced ? <FiChevronUp /> : <FiChevronDown />}
+        </div>
+
+        {sections.advanced && (
+          <div className="mt-3">
+            <div className="d-flex align-items-center mb-2">
+              <label className="form-label small me-3 mb-0">Size:</label>
+
+              <div className="me-2 fw-bold">{qrData.size}px</div>
+
+              <input
+                type="number"
+                className="form-control form-control-sm me-2"
+                style={{ width: "100px" }}
+                min={150}
+                max={2000}
+                step={1}
+                value={qrData.size}
+                onChange={handleSizeChange}
+              />
+            </div>
+
+            <input
+              type="range"
+              className="form-range mb-3"
+              min="150"
+              max="2000"
+              step="10"
+              value={qrData.size}
+              onChange={(e) =>
+                updateQRData({
+                  size: parseInt(e.target.value, 10),
+                })
+              }
+            />
+          </div>
+        )}
+      </div>
+
+      {/* ================= COLOR PICKER ================= */}
+
+      {showColorPicker && (
+        <div
+          className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex align-items-center justify-content-center"
+          style={{ zIndex: 9999 }}
+          onClick={() => setShowColorPicker(null)}
+        >
+          <div onClick={(e) => e.stopPropagation()}>
+            <ChromePicker
+              color={qrData[showColorPicker]}
+              onChange={(color) =>
+                updateQRData({
+                  [showColorPicker]: color.hex,
+                })
+              }
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default QRCustomizer;
